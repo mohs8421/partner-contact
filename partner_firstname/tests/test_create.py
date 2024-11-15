@@ -33,6 +33,18 @@ class PersonCase(TransactionCase):
 
         super(PersonCase, self).tearDown()
 
+    def test_module_installation(self):
+        model = self.env[self.model].with_context(**self.context)
+        unnamed = model.create(
+            {"name": "", "email": "anon@ymous.org", "type": "invoice"}
+        )
+        named = model.create(
+            {"name": "firstname lastname", "email": "firstname@lastname.org"}
+        )
+        model._install_partner_firstname()
+        self.assertEqual(unnamed.name, "")
+        self.assertEqual((named.firstname, named.lastname), ("firstname", "lastname"))
+
     def test_no_name(self):
         """Name is calculated."""
         del self.values["name"]
